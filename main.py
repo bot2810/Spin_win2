@@ -1,117 +1,195 @@
-from flask import Flask, render_template, request, session, jsonify
+
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 import random
-import requests
-from datetime import datetime, timedelta
 import os
-from utils.telegram_api import send_telegram_message, add_balance
+import sqlite3
+from utils.telegram_api import send_telegram_message
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "supersecret")  # Use env var for secret key
 
-# Constants
-MAIN_BOT_TOKEN = "<replace_with_main_bot_token>"
-VIEW_BOT_TOKEN = "<replace_with_view_bot_token>"
-ADMIN_ID = "<replace_with_admin_id>"
-DAILY_SPIN_LIMIT = 15
-BASE_REWARD = 2.5  # Total reward after 15 spins
+# --- Constants ---
+MAIN_BOT_TOKEN = "bot" + os.environ.get("MAIN_BOT_TOKEN")
+VIEW_BOT_TOKEN = "bot" + os.environ.get("VIEW_BOT_TOKEN")
+ADMIN_ID = os.environ.get("ADMIN_ID")
+SPINS_PER_DAY = 15
+TELEGRAM_API_URL = "https://api.telegram.org/"
 
-@app.route('/')
-def index():
-    if 'user_id' not in session:
-        return render_template('login.html')
-    return render_template('index.html')
+# --- Database ---
+DATABASE_FILE = "spin_win.db"
 
-@app.route('/login', methods=['POST'])
-def login():
-    user_id = request.form.get('user_id')
-    if user_id:
-        session['user_id'] = user_id
-        session['spin_count'] = 0
-        session['last_spin_date'] = datetime.now().strftime('%Y-%m-%d')
-        session['total_earned'] = 0
-        notify_admin(f"User {user_id} started game")
-        return jsonify({'status': 'success'})
-    return jsonify({'status': 'error'})
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE_FILE)
+    conn.row_factory = sqlite3.Row
+    return conn
 
-@app.route('/spin', methods=['POST'])
-def spin():
-    if 'user_id' not in session:
-        return jsonify({'status': 'error', 'message': 'Not logged in'})
-    
-    # Check daily reset
-    current_date = datetime.now().strftime('%Y-%m-%d')
-    if session.get('last_spin_date') != current_date:
-        session['spin_count'] = 0
-        session['last_spin_date'] = current_date
-        session['total_earned'] = 0
-    
-    # Check spin limit
-    if session.get('spin_count', 0) >= DAILY_SPIN_LIMIT:
-        return jsonify({'status': 'limit_reached'})
-    
-    # Check ad block (simplified - real implementation would be in JS)
-    ad_blocked = request.json.get('ad_blocked', False)
-    if ad_blocked:
-        notify_admin(f"User {session['user_id']} has adblock enabled")
-        return jsonify({'status': 'ad_blocked'})
-    
-    # Increment spin count
-    session['spin_count'] = session.get('spin_count', 0) + 1
-    spin_count = session['spin_count']
-    
-    # Calculate reward
-    if spin_count < DAILY_SPIN_LIMIT:
-        reward = round(random.uniform(0.1, 1.0), 2)
+def init_db():
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY,
+            telegram_id INTEGER UNIQUE NOT NULL,
+            spins_today INTEGER DEFAULT 0,
+            total_earnings REAL DEFAULT 0.0,
+            adblock_detected INTEGER DEFAULT 0
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+with app.app_context():
+    init_db()
+
+
+# --- Helper Functions ---
+
+def generate_spin_reward():
+    return round(random.uniform(0.10, 1.00), 2)
+
+def calculate_final_earnings(spins, total_earned):
+    #ensure total earning mostly 2.50 per 15 spins
+    if spins == SPINS_PER_DAY:
+        return 2.50
     else:
-        reward = BASE_REWARD - session.get('total_earned', 0)
-        reward = max(reward, 0.1)  # Ensure at least some reward
-    
-    session['total_earned'] = session.get('total_earned', 0) + reward
-    
-    # Prepare response
-    response = {
-        'status': 'success',
-        'reward': reward,
-        'spin_count': spin_count,
-        'total_earned': session['total_earned']
-    }
-    
-    # If last spin, add balance
-    if spin_count == DAILY_SPIN_LIMIT:
-        user_id = session['user_id']
-        add_balance(MAIN_BOT_TOKEN, user_id, BASE_REWARD)
-        notify_admin(f"User {user_id} completed 15 spins. Added ₹{BASE_REWARD}")
-    
-    return jsonify(response)
+        return total_earned # or maybe 0.0 if you dont want to store value
 
-@app.route('/scratch', methods=['POST'])
-def scratch():
-    if 'user_id' not in session:
-        return jsonify({'status': 'error', 'message': 'Not logged in'})
-    
-    if session.get('spin_count', 0) < DAILY_SPIN_LIMIT:
-        return jsonify({'status': 'error', 'message': 'Complete 15 spins first'})
-    
-    if session.get('scratch_used', False):
-        return jsonify({'status': 'error', 'message': 'Already used scratch card'})
-    
-    # Generate random scratch reward
-    scratch_reward = round(random.uniform(1, 5), 2)
-    user_id = session['user_id']
-    
-    # Add balance via Telegram bot
-    add_balance(MAIN_BOT_TOKEN, user_id, scratch_reward)
-    session['scratch_used'] = True
-    
-    notify_admin(f"User {user_id} scratched and won ₹{scratch_reward}")
-    
-    return jsonify({
-        'status': 'success',
-        'reward': scratch_reward
-    })
+def generate_scratch_reward():
+    return round(random.uniform(1.00, 5.00), 2)
 
 def notify_admin(message):
     send_telegram_message(VIEW_BOT_TOKEN, ADMIN_ID, message)
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8080)
+# --- Routes ---
+
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        telegram_id = request.form.get("telegram_id")
+        if telegram_id:
+            try:
+                telegram_id = int(telegram_id)
+            except ValueError:
+                return render_template("index.html", error="Invalid Telegram ID")
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM users WHERE telegram_id = ?", (telegram_id,))
+            user = cursor.fetchone()
+
+            if not user:
+                cursor.execute("INSERT INTO users (telegram_id) VALUES (?)", (telegram_id,))
+                conn.commit()
+                user = cursor.execute("SELECT * FROM users WHERE telegram_id = ?", (telegram_id,)).fetchone()
+
+            conn.close()
+
+            session["telegram_id"] = telegram_id
+            notify_admin(f"User {telegram_id} started game")
+            return redirect(url_for("spin"))
+        else:
+            return render_template("index.html", error="Please enter your Telegram ID")
+    return render_template("index.html")
+
+@app.route("/spin")
+def spin():
+    telegram_id = session.get("telegram_id")
+    if not telegram_id:
+        return redirect(url_for("index"))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT spins_today, total_earnings FROM users WHERE telegram_id = ?", (telegram_id,))
+    user = cursor.fetchone()
+    spins_today = user['spins_today']
+    total_earnings = user['total_earnings']
+    conn.close()
+
+    if spins_today >= SPINS_PER_DAY:
+        return redirect(url_for("scratch"))
+
+    return render_template("spin.html", spins_left=SPINS_PER_DAY - spins_today, total_earnings=total_earnings)
+
+@app.route("/spin_action", methods=["POST"])
+def spin_action():
+    telegram_id = session.get("telegram_id")
+    if not telegram_id:
+        return jsonify({"error": "Not logged in"})
+
+    ad_blocked = request.form.get("ad_blocked") == "true"
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT spins_today, total_earnings FROM users WHERE telegram_id = ?", (telegram_id,))
+    user = cursor.fetchone()
+    spins_today = user['spins_today']
+    total_earnings = user['total_earnings']
+
+    if spins_today >= SPINS_PER_DAY:
+        conn.close()
+        return jsonify({"redirect": url_for("scratch")})
+
+    if ad_blocked:
+        # User loses spin/reward if ad is blocked
+        conn.close()
+        return jsonify({"reward": 0, "spins_left": SPINS_PER_DAY - spins_today, "total_earnings": total_earnings})
+
+    reward = generate_spin_reward()
+
+    new_spins_today = spins_today + 1
+    new_total_earnings = total_earnings + reward
+
+    if new_spins_today == SPINS_PER_DAY:
+        final_earnings = calculate_final_earnings(new_spins_today, new_total_earnings)
+        new_total_earnings = final_earnings
+
+
+    cursor.execute("UPDATE users SET spins_today = ?, total_earnings = ? WHERE telegram_id = ?", (new_spins_today, new_total_earnings, telegram_id))
+    conn.commit()
+    conn.close()
+
+    notify_admin(f"User {telegram_id} completed spin {new_spins_today}/{SPINS_PER_DAY}")
+
+
+    return jsonify({"reward": reward, "spins_left": SPINS_PER_DAY - new_spins_today, "total_earnings": new_total_earnings})
+
+@app.route("/scratch")
+def scratch():
+    telegram_id = session.get("telegram_id")
+    if not telegram_id:
+        return redirect(url_for("index"))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT total_earnings FROM users WHERE telegram_id = ?", (telegram_id,))
+    user = cursor.fetchone()
+    total_earnings = user['total_earnings']
+    conn.close()
+
+    return render_template("scratch.html", total_earnings=total_earnings)
+
+
+@app.route("/scratch_action", methods=["POST"])
+def scratch_action():
+    telegram_id = session.get("telegram_id")
+    if not telegram_id:
+        return jsonify({"error": "Not logged in"})
+
+    scratch_reward = generate_scratch_reward()
+
+    # Send reward to main bot
+    send_telegram_message(MAIN_BOT_TOKEN, telegram_id, f"/addbalance {telegram_id} {scratch_reward}")
+
+    notify_admin(f"User {telegram_id} used scratch card, won ₹{scratch_reward}")
+
+    # Reset spins for the day
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE users SET spins_today = 0, total_earnings = 0 WHERE telegram_id = ?", (telegram_id,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": f"You won ₹{scratch_reward}!", "redirect": url_for("index")})
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=8080)
