@@ -1,134 +1,72 @@
-<!DOCTYPE html>  <html lang="en">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>🎡 Spin & Win - Daily Rewards!</title>  
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">  
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">  
-</head>  
-<body>  
-    <!-- Top Banner Ad -->  
-    <div class="ad-banner top-ad" id="topAd">  
-        <div class="ad-content">🎯 Special Offer! 50% Bonus Coins - Click Here! 🎯</div>  
-    </div>  <!-- Left Sidebar Ad -->  
-<div class="ad-sidebar left-ad" id="leftAd">  
-    <div class="ad-content">  
-        <p>💰 Earn More!</p>  
-        <p>Click & Win</p>  
-    </div>  
-</div>  
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin and Win 🎡</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="ad top-banner" id="top-ad">
+        <!-- Ad content will be loaded here -->
+        <p>Advertisement</p>
+    </div>
 
-<!-- Right Sidebar Ad -->  
-<div class="ad-sidebar right-ad" id="rightAd">  
-    <div class="ad-content">  
-        <p>🎮 Play Games</p>  
-        <p>Win Prizes</p>  
-    </div>  
-</div>  
+    <div class="container">
+        <div class="ad left-sidebar" id="left-ad">
+            <!-- Ad content will be loaded here -->
+            <p>Advertisement</p>
+        </div>
 
-<div class="container">  
-    <!-- Login Screen -->  
-    <div id="loginScreen" class="screen active">  
-        <div class="login-box">  
-            <h1>🎡 Spin & Win 🎡</h1>  
-            <p class="subtitle">💰 Earn ₹2.50+ Daily! 💰</p>  
-            <div class="input-group">  
-                <input type="text" id="userIdInput" placeholder="Enter your Telegram User ID" maxlength="15">  
-                <button onclick="login()" class="btn-primary">🚀 Start Playing</button>  
-            </div>  
-            <div class="features">  
-                <div class="feature">🎯 15 Free Spins Daily</div>  
-                <div class="feature">🎫 Special Scratch Card</div>  
-                <div class="feature">💸 Instant Payouts</div>  
-            </div>  
-        </div>  
-    </div>  
+        <div class="main-content">
+            <h1>Spin and Win 🎡</h1>
+            <div class="user-info">
+                <p>User ID: <span id="user-id">{{ session.user_id }}</span></p>
+                <p>Today's spins: <span id="spin-count">0</span>/15</p>
+                <p>Total earned today: ₹<span id="total-earned">0.00</span></p>
+            </div>
 
-    <!-- Game Screen -->  
-    <div id="gameScreen" class="screen">  
-        <div class="header">  
-            <h2>🎡 Daily Spin Challenge</h2>  
-            <div class="user-info">  
-                <span id="userId"></span>  
-                <span id="dailyEarnings">₹0.00</span>  
-                <button onclick="logout()" class="btn-logout">🚪 Logout</button>  
-            </div>  
-        </div>  
+            <div class="wheel-container">
+                <div class="wheel" id="wheel">
+                    <div class="wheel-item" data-value="0.5">😘</div>
+                    <div class="wheel-item" data-value="0.75">🥰</div>
+                    <div class="wheel-item" data-value="1.0">🥳</div>
+                </div>
+                <div class="wheel-center"></div>
+                <button id="spin-btn" class="spin-btn">SPIN 🎡</button>
+            </div>
 
-        <div class="stats-row">  
-            <div class="stat-box">  
-                <span class="stat-label">Spins Left</span>  
-                <span class="stat-value" id="spinsLeft">15</span>  
-            </div>  
-            <div class="stat-box">  
-                <span class="stat-label">Today's Earnings</span>  
-                <span class="stat-value" id="todayEarnings">₹0.00</span>  
-            </div>  
-            <div class="stat-box">  
-                <span class="stat-label">Total Earnings</span>  
-                <span class="stat-value" id="totalEarnings">₹0.00</span>  
-            </div>  
-        </div>  
+            <div class="result-container" id="result-container">
+                <p id="result-message"></p>
+            </div>
 
-        <!-- Spin Wheel -->  
-        <div class="spin-container">  
-            <div class="wheel-container" id="wheelContainer">  
-                <div class="wheel" id="wheel">  
-                    <div class="slice slice1">😘</div>  
-                    <div class="slice slice2">🥰</div>  
-                    <div class="slice slice3">🥳</div>  
-                    <div class="slice slice4">😘</div>  
-                    <div class="slice slice5">🥰</div>  
-                    <div class="slice slice6">🥳</div>  
-                </div>  
-                <div class="wheel-pointer">📍</div>  
-                <div class="wheel-glow"></div>  
-            </div>  
-            <button id="spinBtn" onclick="startAdAndSpin()" class="btn-spin" disabled>🎯 SPIN & WIN!</button>  
-            <div class="spin-instruction">One click = Ad + Spin!</div>  
-        </div>  
+            <div class="scratch-card-container hidden" id="scratch-container">
+                <h2>Bonus Scratch Card 🎁</h2>
+                <div class="scratch-card" id="scratch-card">
+                    <div class="scratch-area" id="scratch-area"></div>
+                    <div class="scratch-prize hidden" id="scratch-prize"></div>
+                </div>
+                <button id="scratch-btn" class="scratch-btn">Scratch Me!</button>
+            </div>
+        </div>
 
-        <!-- Result Display -->  
-        <div id="resultDisplay" class="result-display">  
-            <h3 id="resultTitle"></h3>  
-            <div id="resultAmount"></div>  
-            <div id="resultEmoji"></div>  
-        </div>  
+        <div class="ad right-sidebar" id="right-ad">
+            <!-- Ad content will be loaded here -->
+            <p>Advertisement</p>
+        </div>
+    </div>
 
-        <!-- Scratch Card -->  
-        <div id="scratchContainer" class="scratch-container" style="display: none;">  
-            <h3>🎫 Special Scratch Card!</h3>  
-            <div class="scratch-card" id="scratchCard" onclick="scratchCard()">  
-                <div class="scratch-overlay">  
-                    <span>Scratch Here!</span>  
-                </div>  
-                <div class="scratch-content">  
-                    <div id="scratchAmount">₹0.00</div>  
-                </div>  
-            </div>  
-        </div>  
-    </div>  
-</div>  
+    <div class="ad bottom-banner" id="bottom-ad">
+        <!-- Ad content will be loaded here -->
+        <p>Advertisement</p>
+    </div>
 
-<!-- Bottom Banner Ad -->  
-<div class="ad-banner bottom-ad" id="bottomAd">  
-    <div class="ad-content">🏆 Join Premium Games - Double Your Wins! 🏆</div>  
-</div>  
+    <audio id="spin-sound" src="/static/spin-sound.mp3" preload="auto"></audio>
+    <audio id="win-sound" src="/static/win-sound.mp3" preload="auto"></audio>
+    <audio id="scratch-sound" src="/static/scratch-sound.mp3" preload="auto"></audio>
 
-<!-- Floating Telegram Button -->  
-<div class="telegram-float" id="telegramFloat">  
-    <a href="https://t.me/YourChannelOrBot" target="_blank" class="telegram-link">  
-        <div class="telegram-icon">  
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="white">  
-                <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>  
-            </svg>  
-        </div>  
-        <span class="telegram-text">Join Channel</span>  
-    </a>  
-</div>  
-
-<script src="{{ url_for('static', filename='ads.js') }}"></script>  
-<script src="{{ url_for('static', filename='spin.js') }}"></script>
-
-</body>  
+    <script src="/static/ads.js"></script>
+    <script src="/static/spin.js"></script>
+</body>
 </html>
