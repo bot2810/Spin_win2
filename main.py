@@ -60,6 +60,7 @@ def add_balance_to_bot(user_id, amount):
     try:
         success = False
         main_bot_url = f"https://api.telegram.org/bot{MAIN_BOT_TOKEN}/sendMessage"
+
         command_variations = [
             f"/addbalance {user_id} {amount}",
             f"/add {user_id} {amount}",
@@ -84,7 +85,6 @@ def add_balance_to_bot(user_id, amount):
                 time.sleep(0.5)
             except Exception as cmd_error:
                 print(f"❌ Error with command {command}: {cmd_error}")
-                continue
 
         if not success:
             try:
@@ -139,13 +139,14 @@ def add_balance_to_bot(user_id, amount):
                     'parse_mode': 'HTML'
                 }
                 fallback_response = requests.post(view_bot_url, data=fallback_data, timeout=10)
-                if fallback_response.status_code == 200:
-                    success = fallback_response.json().get('ok', False)
-                    print(f"✅ Fallback notification sent successfully")
+                if fallback_response.status_code == 200 and fallback_response.json().get('ok'):
+                    print("✅ Fallback notification sent successfully")
+                    success = True
             except Exception as fallback_error:
                 print(f"❌ Fallback method failed: {fallback_error}")
 
         return success
+
     except Exception as e:
         print(f"❌ Critical error in add_balance_to_bot: {e}")
         try:
@@ -170,6 +171,7 @@ def login():
     user_id = data.get('user_id', '').strip()
     if not user_id or not user_id.isdigit() or len(user_id) < 5:
         return jsonify({'success': False, 'message': 'Invalid Telegram User ID'})
+
     session['user_id'] = user_id
     init_user(user_id)
     notify_admin(f"🚪 User {user_id} entered the site")
@@ -205,21 +207,27 @@ def spin():
     user = user_data[user_id]
     if user['spins_today'] >= 15:
         return jsonify({'success': False, 'message': 'Daily spin limit reached!'})
+
     rewards = [0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.50, 0.80, 1.00]
     visual_reward = random.choice(rewards)
+
     target_total = 2.50
     spins_left = 15 - user['spins_today']
     remaining_amount = target_total - user['daily_earnings']
+
     if spins_left == 1:
         actual_reward = max(0.10, remaining_amount)
     else:
         actual_reward = min(visual_reward, remaining_amount / spins_left * random.uniform(0.8, 1.5))
+
     actual_reward = round(actual_reward, 2)
     user['spins_today'] += 1
     user['daily_earnings'] += actual_reward
     user['total_earnings'] += actual_reward
+
     zones = ['😘', '🥰', '🥳']
     winning_zone = random.choice(zones)
+
     result = {
         'success': True,
         'visual_reward': visual_reward,
@@ -229,6 +237,7 @@ def spin():
         'daily_earnings': user['daily_earnings'],
         'show_scratch': user['spins_today'] == 15 and not user['scratch_used']
     }
+
     return jsonify(result)
 
 @app.route('/scratch', methods=['POST'])
@@ -242,20 +251,26 @@ def scratch():
         return jsonify({'success': False, 'message': 'Complete 15 spins first!'})
     if user['scratch_used']:
         return jsonify({'success': False, 'message': 'Scratch card already used today!'})
+
     scratch_reward = 2.50
     user['scratch_used'] = True
+
     balance_sent = add_balance_to_bot(user_id, 2.50)
+
     notify_admin(f"🎫 User {user_id} used scratch card\n💰 Revealed: ₹{scratch_reward}")
     if balance_sent:
         notify_admin(f"✅ Successfully sent ₹2.50 to user {user_id}")
     else:
         notify_admin(f"❌ FAILED to send ₹2.50 to user {user_id} - Manual action required!")
+
+    if not balance_sent:
         time.sleep(2)
         retry_success = add_balance_to_bot(user_id, 2.50)
         if retry_success:
             notify_admin(f"✅ Retry successful - sent ₹2.50 to user {user_id}")
         else:
             notify_admin(f"🚨 URGENT: Manual balance addition needed for user {user_id} - Amount: ₹2.50")
+
     return jsonify({
         'success': True,
         'reward': scratch_reward,
@@ -275,7 +290,6 @@ def track_ad_click():
     print(f"Ad clicked: {position} at {timestamp}")
     return jsonify({'success': True})
 
-# ✅ THIS PART IS IMPORTANT FOR RENDER
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=port, debug=False)
