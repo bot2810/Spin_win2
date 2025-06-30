@@ -1,1 +1,1 @@
-web: gunicorn main:app --host=0.0.0.0 --port=$PORT
+web: gunicorn main:app --worker-class gevent --bind 0.0.0.0:8080
