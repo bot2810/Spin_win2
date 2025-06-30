@@ -1,705 +1,266 @@
-{
-margin: 0;
-padding: 0;
-box-sizing: border-box;
-}
-
-
+/* Base Styles */
 body {
-font-family: 'Poppins', sans-serif;
-background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-color: white;
-min-height: 100vh;
-overflow-x: hidden;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
 }
 
-/* Ad Styles */
-.ad-banner {
-position: fixed;
-left: 0;
-right: 0;
-height: 60px;
-background: linear-gradient(45deg, #ff6b6b, #ffd93d);
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 1000;
-cursor: pointer;
-transition: all 0.3s ease;
-border: 2px solid #fff;
-box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-.top-ad {
-top: 0;
-animation: slideInTop 0.5s ease-out;
-}
-
-.bottom-ad {
-bottom: 0;
-animation: slideInBottom 0.5s ease-out;
-}
-
-.ad-sidebar {
-position: fixed;
-top: 60px;
-bottom: 60px;
-width: 80px;
-background: linear-gradient(45deg, #4ecdc4, #44a08d);
-display: flex;
-align-items: center;
-justify-content: center;
-z-index: 1000;
-cursor: pointer;
-transition: all 0.3s ease;
-border: 2px solid #fff;
-box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-}
-
-.left-ad {
-left: 0;
-animation: slideInLeft 0.5s ease-out;
-}
-
-.right-ad {
-right: 0;
-animation: slideInRight 0.5s ease-out;
-}
-
-.ad-content {
-text-align: center;
-font-weight: 600;
-color: white;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-font-size: 14px;
-padding: 5px;
-}
-
-.ad-sidebar .ad-content {
-writing-mode: vertical-rl;
-text-orientation: mixed;
-font-size: 12px;
-}
-
-.ad-banner:hover, .ad-sidebar:hover {
-transform: scale(1.05);
-box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-}
-
-/* Animations */
-@keyframes slideInTop {
-from { transform: translateY(-100%); }
-to { transform: translateY(0); }
-}
-
-@keyframes slideInBottom {
-from { transform: translateY(100%); }
-to { transform: translateY(0); }
-}
-
-@keyframes slideInLeft {
-from { transform: translateX(-100%); }
-to { transform: translateX(0); }
-}
-
-@keyframes slideInRight {
-from { transform: translateX(100%); }
-to { transform: translateX(0); }
-}
-
-/* Main Container */
 .container {
-margin: 80px 100px;
-max-width: 800px;
-margin-left: auto;
-margin-right: auto;
-position: relative;
-z-index: 1;
+    display: flex;
+    min-height: calc(100vh - 120px);
 }
 
-/* Screen Management */
-.screen {
-display: none;
-animation: fadeIn 0.5s ease-in;
+.main-content {
+    flex: 1;
+    padding: 20px;
+    text-align: center;
 }
 
-.screen.active {
-display: block;
+/* Header Styles */
+h1, h2 {
+    color: #ff6b6b;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
 }
 
-@keyframes fadeIn {
-from { opacity: 0; transform: translateY(20px); }
-to { opacity: 1; transform: translateY(0); }
-}
-
-/* Login Screen */
-.login-box {
-background: rgba(255, 255, 255, 0.1);
-backdrop-filter: blur(10px);
-border-radius: 20px;
-padding: 40px;
-text-align: center;
-box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-border: 1px solid rgba(255,255,255,0.2);
-}
-
-.login-box h1 {
-font-family: 'Fredoka One', cursive;
-font-size: 2.5em;
-margin-bottom: 10px;
-text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.subtitle {
-font-size: 1.2em;
-color: #ffd93d;
-margin-bottom: 30px;
-font-weight: 600;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-
-.input-group {
-margin-bottom: 30px;
-}
-
-.input-group input {
-width: 100%;
-padding: 15px;
-border: none;
-border-radius: 10px;
-font-size: 16px;
-margin-bottom: 15px;
-background: rgba(255,255,255,0.9);
-color: #333;
-text-align: center;
-}
-
-.btn-primary {
-width: 100%;
-padding: 15px;
-background: linear-gradient(45deg, #ff6b6b, #ffd93d);
-color: white;
-border: none;
-border-radius: 10px;
-font-size: 18px;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.3s ease;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-
-.btn-primary:hover {
-transform: translateY(-2px);
-box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-}
-
-.features {
-display: flex;
-justify-content: space-around;
-margin-top: 20px;
-flex-wrap: wrap;
-gap: 10px;
-}
-
-.feature {
-background: rgba(255,255,255,0.1);
-padding: 10px;
-border-radius: 10px;
-font-size: 14px;
-font-weight: 500;
-flex: 1;
-min-width: 120px;
-}
-
-/* Game Screen */
-.header {
-text-align: center;
-margin-bottom: 30px;
-}
-
-.header h2 {
-font-family: 'Fredoka One', cursive;
-font-size: 2em;
-margin-bottom: 10px;
-text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-}
-
-.user-info {
-display: flex;
-justify-content: space-between;
-align-items: center;
-font-weight: 600;
-font-size: 16px;
-}
-
-.btn-logout {
-background: linear-gradient(45deg, #ff4757, #ff3838);
-color: white;
-border: none;
-border-radius: 8px;
-padding: 8px 16px;
-font-size: 14px;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.3s ease;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-
-.btn-logout:hover {
-transform: translateY(-1px);
-box-shadow: 0 5px 15px rgba(255, 71, 87, 0.4);
-background: linear-gradient(45deg, #ff3838, #ff2727);
-}
-
-.stats-row {
-display: flex;
-gap: 15px;
-margin-bottom: 30px;
-justify-content: center;
-flex-wrap: wrap;
-}
-
-.stat-box {
-background: rgba(255,255,255,0.1);
-backdrop-filter: blur(10px);
-padding: 20px;
-border-radius: 15px;
-text-align: center;
-flex: 1;
-min-width: 120px;
-border: 1px solid rgba(255,255,255,0.2);
-}
-
-.stat-label {
-display: block;
-font-size: 14px;
-margin-bottom: 5px;
-color: rgba(255,255,255,0.8);
-}
-
-.stat-value {
-display: block;
-font-size: 18px;
-font-weight: 600;
-color: #ffd93d;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-}
-
-/* Spin Wheel */
-.spin-container {
-text-align: center;
-margin: 20px auto;
-max-width: 400px;
-}
-
+/* Wheel Styles */
 .wheel-container {
-position: relative;
-display: inline-block;
-margin-bottom: 20px;
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 40px auto;
 }
 
 .wheel {
-width: 300px;
-height: 300px;
-border-radius: 50%;
-border: 10px solid #fff;
-position: relative;
-transition: transform 3s cubic-bezier(0.23, 1, 0.32, 1);
-background: conic-gradient(
-from 0deg,
-#ff6b6b 0deg 60deg,
-#4ecdc4 60deg 120deg,
-#ffd93d 120deg 180deg,
-#ff6b6b 180deg 240deg,
-#4ecdc4 240deg 300deg,
-#ffd93d 300deg 360deg
-);
-box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    border: 8px solid #333;
+    box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
 }
 
-.slice {
-position: absolute;
-width: 100%;
-height: 100%;
-display: flex;
-align-items: center;
-justify-content: center;
-font-size: 36px;
-font-weight: bold;
-text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
-transform-origin: 50% 50%;
+.wheel-item {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    transform-origin: center;
 }
 
-.slice1 { transform: rotate(30deg) translate(0, -90px) rotate(-30deg); }
-.slice2 { transform: rotate(90deg) translate(0, -90px) rotate(-90deg); }
-.slice3 { transform: rotate(150deg) translate(0, -90px) rotate(-150deg); }
-.slice4 { transform: rotate(210deg) translate(0, -90px) rotate(-210deg); }
-.slice5 { transform: rotate(270deg) translate(0, -90px) rotate(-270deg); }
-.slice6 { transform: rotate(330deg) translate(0, -90px) rotate(-330deg); }
-
-.wheel-pointer {
-position: absolute;
-top: -20px;
-left: 50%;
-transform: translateX(-50%);
-font-size: 40px;
-z-index: 10;
-filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
+.wheel-item:nth-child(1) {
+    background-color: #ff9ff3;
+    transform: rotate(0deg) skewY(30deg);
 }
 
-.wheel-glow {
-position: absolute;
-top: -15px;
-left: -15px;
-right: -15px;
-bottom: -15px;
-border-radius: 50%;
-background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
-animation: glow 2s ease-in-out infinite alternate;
+.wheel-item:nth-child(2) {
+    background-color: #feca57;
+    transform: rotate(120deg) skewY(30deg);
 }
 
-@keyframes glow {
-from { opacity: 0.5; }
-to { opacity: 1; }
+.wheel-item:nth-child(3) {
+    background-color: #1dd1a1;
+    transform: rotate(240deg) skewY(30deg);
 }
 
-.btn-spin {
-padding: 20px 40px;
-background: linear-gradient(45deg, #ff6b6b, #ffd93d);
-color: white;
-border: none;
-border-radius: 50px;
-font-size: 22px;
-font-weight: 700;
-cursor: pointer;
-transition: all 0.3s ease;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
-box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-margin-top: 10px;
+.wheel-center {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #333;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    border: 5px solid #fff;
 }
 
-.btn-spin:hover:not(:disabled) {
-transform: translateY(-3px);
-box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+.spin-btn {
+    margin-top: 20px;
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+    transition: all 0.3s ease;
 }
 
-.btn-spin:disabled {
-opacity: 0.6;
-cursor: not-allowed;
-transform: none;
+.spin-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
 }
 
-.spin-instruction {
-margin-top: 10px;
-font-size: 14px;
-color: rgba(255,255,255,0.8);
+.spin-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
 }
 
-/* Result Display */
-.result-display {
-position: fixed;
-top: 50%;
-left: 50%;
-transform: translate(-50%, -50%) scale(0);
-background: rgba(0,0,0,0.9);
-color: white;
-padding: 40px;
-border-radius: 20px;
-text-align: center;
-z-index: 10000;
-transition: all 0.3s ease;
-border: 2px solid #ffd93d;
+/* Result Styles */
+.result-container {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.result-display.show {
-transform: translate(-50%, -50%) scale(1);
-}
-
-.result-display h3 {
-font-size: 24px;
-margin-bottom: 15px;
-}
-
-.result-display div {
-font-size: 20px;
-margin: 10px 0;
-}
-
-/* Scratch Card */
-.scratch-container {
-text-align: center;
-margin: 30px 0;
-}
-
-.scratch-container h3 {
-margin-bottom: 20px;
-font-size: 24px;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+/* Scratch Card Styles */
+.scratch-card-container {
+    margin: 40px auto;
+    max-width: 400px;
 }
 
 .scratch-card {
-position: relative;
-width: 200px;
-height: 120px;
-margin: 0 auto;
-cursor: pointer;
-border-radius: 15px;
-overflow: hidden;
-box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
+    border-radius: 15px;
+    overflow: hidden;
+    margin: 20px 0;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-.scratch-overlay {
-position: absolute;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background: linear-gradient(45deg, #c0392b, #e74c3c);
-display: flex;
-align-items: center;
-justify-content: center;
-color: white;
-font-weight: 600;
-transition: all 0.3s ease;
-border: 2px solid #fff;
+.scratch-area {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #ddd;
+    cursor: crosshair;
 }
 
-.scratch-content {
-position: absolute;
-top: 0;
-left: 0;
-right: 0;
-bottom: 0;
-background: linear-gradient(45deg, #27ae60, #2ecc71);
-display: flex;
-align-items: center;
-justify-content: center;
-color: white;
-font-size: 24px;
-font-weight: 600;
-text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+.scratch-prize {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: #333;
 }
 
-.scratch-card.scratched .scratch-overlay {
-opacity: 0;
-transform: scale(0);
+.scratch-btn {
+    padding: 12px 30px;
+    background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(116, 185, 255, 0.4);
+    transition: all 0.3s ease;
 }
 
-/* Notifications */
-.notification {
-position: fixed;
-top: 120px;
-left: 50%;
-transform: translateX(-50%);
-background: rgba(0,0,0,0.9);
-color: white;
-padding: 15px 25px;
-border-radius: 25px;
-z-index: 10000;
-font-weight: 500;
-animation: slideDown 0.3s ease-out;
-border: 1px solid #ffd93d;
+.scratch-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(116, 185, 255, 0.6);
 }
 
-@keyframes slideDown {
-from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
-to { transform: translateX(-50%) translateY(0); opacity: 1; }
+/* User Info Styles */
+.user-info {
+    background: rgba(255, 255, 255, 0.8);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-/* Responsive Design */
+/* Ad Styles */
+.ad {
+    background: #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin: 5px;
+    border: 1px dashed #ccc;
+}
+
+.top-banner {
+    height: 90px;
+}
+
+.bottom-banner {
+    height: 90px;
+}
+
+.left-sidebar, .right-sidebar {
+    width: 160px;
+}
+
+/* Login Styles */
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+#login-form input {
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+#login-form button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#login-form button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(108, 92, 231, 0.4);
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+/* Responsive Styles */
 @media (max-width: 768px) {
-.container {
-margin: 80px 20px;
-padding: 0 10px;
+    .container {
+        flex-direction: column;
+    }
+    
+    .left-sidebar, .right-sidebar {
+        width: 100%;
+        height: auto;
+    }
+    
+    .wheel-container {
+        width: 250px;
+        height: 250px;
+    }
 }
-
-.ad-sidebar {  
-    width: 60px;  
-}  
-
-.stats-row {  
-    flex-direction: column;  
-    gap: 10px;  
-}  
-
-.wheel {  
-    width: 250px;  
-    height: 250px;  
-}  
-
-.slice {  
-    font-size: 28px;  
-}  
-
-.slice1 { transform: rotate(30deg) translate(0, -75px) rotate(-30deg); }  
-.slice2 { transform: rotate(90deg) translate(0, -75px) rotate(-90deg); }  
-.slice3 { transform: rotate(150deg) translate(0, -75px) rotate(-150deg); }  
-.slice4 { transform: rotate(210deg) translate(0, -75px) rotate(-210deg); }  
-.slice5 { transform: rotate(270deg) translate(0, -75px) rotate(-270deg); }  
-.slice6 { transform: rotate(330deg) translate(0, -75px) rotate(-330deg); }  
-
-.wheel-pointer {  
-    font-size: 35px;  
-    top: -18px;  
-}  
-
-.btn-spin {  
-    padding: 18px 35px;  
-    font-size: 20px;  
-}  
-
-.features {  
-    flex-direction: column;  
-    gap: 10px;  
-}  
-
-.user-info {  
-    flex-direction: column;  
-    gap: 5px;  
-    text-align: center;  
-}
-
-}
-
-/* Floating Telegram Button */
-.telegram-float {
-position: fixed;
-bottom: 20px;
-right: 20px;
-z-index: 9999;
-animation: telegramPulse 2s infinite;
-}
-
-.telegram-link {
-display: flex;
-align-items: center;
-background: linear-gradient(135deg, #0088cc, #229ed9);
-color: white;
-text-decoration: none;
-padding: 12px 20px;
-border-radius: 50px;
-box-shadow: 0 8px 25px rgba(0, 136, 204, 0.4);
-transition: all 0.3s ease;
-font-weight: 600;
-font-size: 14px;
-border: 2px solid rgba(255, 255, 255, 0.2);
-}
-
-.telegram-link:hover {
-transform: translateY(-3px);
-box-shadow: 0 12px 35px rgba(0, 136, 204, 0.6);
-background: linear-gradient(135deg, #229ed9, #0088cc);
-}
-
-.telegram-icon {
-display: flex;
-align-items: center;
-justify-content: center;
-margin-right: 8px;
-background: rgba(255, 255, 255, 0.1);
-border-radius: 50%;
-width: 40px;
-height: 40px;
-backdrop-filter: blur(10px);
-}
-
-.telegram-text {
-font-weight: 600;
-text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-}
-
-@keyframes telegramPulse {
-0% { transform: scale(1); }
-50% { transform: scale(1.05); }
-100% { transform: scale(1); }
-}
-
-/* Telegram Button Responsive */
-@media (max-width: 768px) {
-.telegram-float {
-bottom: 80px;
-right: 15px;
-}
-
-.telegram-link {  
-    padding: 10px 16px;  
-    font-size: 13px;  
-}  
-  
-.telegram-icon {  
-    width: 35px;  
-    height: 35px;  
-    margin-right: 6px;  
-}  
-  
-.telegram-icon svg {  
-    width: 28px;  
-    height: 28px;  
-}
-
-}
-
-@media (max-width: 480px) {
-.login-box {
-padding: 20px;
-}
-
-.login-box h1 {  
-    font-size: 2em;  
-}  
-
-.wheel {  
-    width: 200px;  
-    height: 200px;  
-}  
-
-.slice {  
-    font-size: 24px;  
-}  
-
-.slice1 { transform: rotate(30deg) translate(0, -60px) rotate(-30deg); }  
-.slice2 { transform: rotate(90deg) translate(0, -60px) rotate(-90deg); }  
-.slice3 { transform: rotate(150deg) translate(0, -60px) rotate(-150deg); }  
-.slice4 { transform: rotate(210deg) translate(0, -60px) rotate(-210deg); }  
-.slice5 { transform: rotate(270deg) translate(0, -60px) rotate(-270deg); }  
-.slice6 { transform: rotate(330deg) translate(0, -60px) rotate(-330deg); }  
-
-.wheel-pointer {  
-    font-size: 30px;  
-    top: -15px;  
-}  
-
-.btn-spin {  
-    padding: 15px 30px;  
-    font-size: 18px;  
-}  
-
-.container {  
-    margin: 80px 10px;  
-}  
-  
-.telegram-float {  
-    bottom: 70px;  
-    right: 10px;  
-}  
-  
-.telegram-link {  
-    padding: 8px 12px;  
-    font-size: 12px;  
-}  
-  
-.telegram-icon {  
-    width: 30px;  
-    height: 30px;  
-    margin-right: 5px;  
-}  
-  
-.telegram-icon svg {  
-    width: 24px;  
-    height: 24px;  
-}
-
-}
-
-  
-
