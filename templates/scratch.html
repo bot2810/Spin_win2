@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spin and Win</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* Static Ad Styles */
+        .ad-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .ad-banner {
+            width: 150px; /* Adjust as needed */
+            height: 100px; /* Adjust as needed */
+            border: 1px solid #ccc;
+        }
+        #wheelContainer{
+            position:relative
+        }
+        #spinButton{
+            position:absolute;
+            top:50%;
+            left:50%;
+            transform: translate(-50%, -50%);
+            z-index:1
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spin the Wheel! 🎡</h1>
+        <p>Spins left: <span id="spins-left">{{ spins_left }}</span></p>
+        <p>Total earnings: ₹<span id="total-earnings">{{ total_earnings }}</span></p>
+
+        <div class="ad-container">
+            <div class="ad-banner">Top Ad</div>
+            <div class="ad-banner">Bottom Ad</div>
+        </div>
+
+        <div class="ad-container">
+            <div class="ad-banner">Left Ad</div>
+            <div class="ad-banner">Right Ad</div>
+        </div>
+
+        <div id="wheelContainer">
+        <canvas id="wheel" width="300" height="300"></canvas>
+        <button id="spinButton">Spin!</button>
+        </div>
+
+        <p id="reward-message"></p>
+
+        <audio id="spinSound" src="{{ url_for('static', filename='spin.mp3') }}" preload="auto"></audio>
+
+        <div id="ad-block-warning" style="color: red; display: none;">Ad blocker detected! Please disable it to continue.</div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{{ url_for('static', filename='ads.js') }}"></script>
+    <script src="{{ url_for('static', filename='spin.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            ads.init(); // Initialize the ads system
+        });
+    </script>
+</body>
+</html>
