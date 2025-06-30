@@ -1,6 +1,10 @@
 services:
   - type: web
-    name: spin_win2
+    name: spin-win-app
     env: python
+    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn main:app --bind 0.0.0.0:$PORT
+    startCommand: gunicorn main:app--host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.7
