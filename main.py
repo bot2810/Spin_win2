@@ -6,51 +6,49 @@ import json
 from datetime import datetime, date
 import os
 
-app = Flask(name)
+app = Flask(__name__)
 app.secret_key = 'spin-and-win-secret-key-2024'
 
-Configuration - Replace with your actual values
-
+# Configuration - Replace with your actual values
 MAIN_BOT_TOKEN = ""
 VIEW_BOT_TOKEN = ""
 ADMIN_ID = "7929115529"
 
-In-memory storage (replace with database for production)
-
+# In-memory storage (replace with database for production)
 user_data = {}
 
 def get_today():
-return date.today().isoformat()
+    return date.today().isoformat()
 
 def init_user(user_id):
-today = get_today()
-if user_id not in user_data:
-user_data[user_id] = {
-'spins_today': 0,
-'daily_earnings': 0.0,
-'total_earnings': 0.0,
-'scratch_used': False,
-'last_date': today,
-'created_at': datetime.now().isoformat()
-}
+    today = get_today()
+    if user_id not in user_data:
+        user_data[user_id] = {
+            'spins_today': 0,
+            'daily_earnings': 0.0,
+            'total_earnings': 0.0,
+            'scratch_used': False,
+            'last_date': today,
+            'created_at': datetime.now().isoformat()
+        }
 
-# Reset daily data if new day  
-if user_data[user_id]['last_date'] != today:  
-    user_data[user_id]['spins_today'] = 0  
-    user_data[user_id]['daily_earnings'] = 0.0  
-    user_data[user_id]['scratch_used'] = False  
-    user_data[user_id]['last_date'] = today
+    # Reset daily data if new day  
+    if user_data[user_id]['last_date'] != today:
+        user_data[user_id]['spins_today'] = 0
+        user_data[user_id]['daily_earnings'] = 0.0
+        user_data[user_id]['scratch_used'] = False
+        user_data[user_id]['last_date'] = today
 
 def send_telegram_message(bot_token, chat_id, message):
-try:
-url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-data = {
-'chat_id': chat_id,
-'text': message,
-'parse_mode': 'HTML'
-}
-response = requests.post(url, data=data, timeout=10)
-return response.status_code == 200
+    try:
+        url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        data = {
+            'chat_id': chat_id,
+            'text': message,
+            'parse_mode': 'HTML'
+        }
+        response = requests.post(url, data=data, timeout=10)
+        return response.status_code == 200
 except Exception as e:
 print(f"Failed to send telegram message: {e}")
 return False
